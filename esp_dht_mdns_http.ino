@@ -50,17 +50,17 @@ static char humidityPercent[7];
 
 void setup() {
     int waitCounter = 0;
-    
+
     // Initializing serial port for debugging purposes
     Serial.begin(115200);
     delay(10);
 
     // Start up DHT sensor
     dht.begin();
-  
+
     // Connecting to WiFi network
     WiFi.begin(ssid, password);
-  
+
     unsigned long started = millis();
 
     while (WiFi.status() != WL_CONNECTED) {
@@ -78,11 +78,11 @@ void setup() {
     my_mdns.Clear();
     struct mdns::Query query_mqtt;
     strncpy(query_mqtt.qname_buffer, QUERY_HOSTNAME, MAX_MDNS_NAME_LEN);
-    
+
     query_mqtt.qtype = MDNS_TYPE_A;
     query_mqtt.qclass = 1;    // "INternet"
     query_mqtt.unicast_response = 0;
-  
+
     my_mdns.AddQuery(query_mqtt);
     my_mdns.Send();
 
@@ -108,27 +108,26 @@ void loop() {
         // Read temperature as Fahrenheit (isFahrenheit = true)
         float tf = dht.readTemperature(true);
         // Check if any reads failed and exit early (to try again).
-        
+
         if (isnan(hp) || isnan(tc) || isnan(tf)) {
             ESP.deepSleep(RETRY_INTERVAL); // Try again after a while
         } else {
-            dtostrf(tc, -6, 2, celsiusTemp); // negative width does left-justify             
-            dtostrf(tf, -6, 2, fahrenheitTemp);         
+            dtostrf(tc, -6, 2, celsiusTemp); // negative width does left-justify
+            dtostrf(tf, -6, 2, fahrenheitTemp);
             dtostrf(hp, -6, 2, humidityPercent);
             sprintf(
                 http_buffer,
                 "http://%s:%d/esp_sample?tc=%s&tf=%s&hp=%s", // Change this to your needs
                 answerHost,
-                HOST_PORT,,
+                HOST_PORT,
                 celsiusTemp,
                 fahrenheitTemp,
                 humidityPercent
             );
-            
+
             http.begin(http_buffer);
             // Yeah, I know this technically should be a POST. So sue me. :p
             int resultCode = http.GET();
         }
     ESP.deepSleep(CYCLE_SLEEP_INTERVAL);
-}   
-
+}
