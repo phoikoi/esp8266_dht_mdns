@@ -24,7 +24,9 @@ Do Things.)
 > So make sure to disconnect it when you want to
 > upload a sketch.
 
-Feel free to borrow from this sketch if it helps you.
+Feel free to borrow from this sketch if it helps you. I have
+included a very simple server app, written in python (3.6+)
+that is designed to talk to the sketch as written.
 
 Have fun!
 
