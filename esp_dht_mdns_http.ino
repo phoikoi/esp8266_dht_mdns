@@ -13,15 +13,15 @@
 #define DHTTYPE DHT22
 #define QUERY_HOSTNAME "example.local" // MUST HAVE .local AT THE END
 
-#define RETRY_INTERVAL = (60*1000000) // 1 minute
-#define CYCLE_SLEEP_INTERVAL = (15*60*1000000) // 15 minutes
-#define WIFI_WAIT_SECONDS = 15
-#define MDNS_WAIT_SECONDS = 15
+#define RETRY_INTERVAL (60*1000000) // 1 minute
+#define CYCLE_SLEEP_INTERVAL (15*60*1000000) // 15 minutes
+#define WIFI_WAIT_SECONDS 15
+#define MDNS_WAIT_SECONDS 15
 
 #define HOST_PORT 8030 // Change as you like
 
 // Replace with your network details
-const char* ssid = "YOUR SSID HERE";
+const char* ssid = "SSID HERE";
 const char* password = "PASSWORD HERE";
 
 char answerHost[80];
@@ -67,12 +67,13 @@ void setup() {
         delay(500);
         Serial.print(".");
         if ((millis() - started)/1000 > WIFI_WAIT_SECONDS) {
+            Serial.println("Timed out waiting for wifi startup, sleeping...");
             ESP.deepSleep(RETRY_INTERVAL); // Go to sleep for a while, then reboot
         }
     }
-    // Serial.println("Waiting for the ESP IP...");
+    Serial.println("Waiting for the ESP IP...");
     delay(5000);
-    // Serial.println(WiFi.localIP());
+    Serial.println(WiFi.localIP());
 
     // Send mDNS query for server
     my_mdns.Clear();
@@ -93,6 +94,7 @@ void setup() {
     while (strlen(answerHost)==0) {
         my_mdns.loop();
         if ((millis()-started)/1000 > MDNS_WAIT_SECONDS) {
+            Serial.println("Timed out waiting for proper mDNS reply, sleeping...");
             ESP.deepSleep(RETRY_INTERVAL); // try again in a while after rebooting
         }
     }
